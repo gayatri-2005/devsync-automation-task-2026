@@ -1,0 +1,31 @@
+name: Daily Automated Update
+
+on:
+  schedule:
+    - cron: '45 10 * * *' # Runs at 10:45 UTC (around 4:15 PM IST)
+  workflow_dispatch: # Allows manual trigger
+
+jobs:
+  commit:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Needed to push commits
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Step for 24f2000013@ds.study.iitm.ac.in
+        run: |
+          echo "Last updated: $(date)" > activity.txt
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Create and Push Commit
+        run: |
+          git add activity.txt
+          git commit -m "Automated daily update: $(date)" || echo "No changes to commit"
+          git push
